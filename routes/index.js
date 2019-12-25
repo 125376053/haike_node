@@ -13,8 +13,8 @@ var Imgs = require('../model/imgs').Imgs
 router.post('/common/upload/img', async function (req, res, next) {
 
     new formidable.IncomingForm().parse(req,function (err, fields, files) {
-        console.log(files.file.name); //上传后图片的名字
-        console.log(files.file.path); //上传后图片的默认地址
+        //console.log(files.file.name); //上传后图片的名字
+        //console.log(files.file.path); //上传后图片的默认地址
         var filename = uuid.v4() + path.extname(files.file.name);//不重复字符串+图片后缀名
         fs.createReadStream(files.file.path).pipe(
             fs.createWriteStream(
@@ -35,7 +35,7 @@ router.post('/common/upload/img', async function (req, res, next) {
          */
 
         connect.query(`insert into imgs (src) values ('${req.headers.origin}/upload/${filename}')`).then(ret=>{
-            console.log(ret);
+            //console.log(ret);
         })
 
         //把文件名发送给客户端 ajax data数据 ret

@@ -18,7 +18,7 @@ router.post('/login', async function (req, res, next) {
         // 2 验证密码 将密码加密后和数据库密码比较
         if (ret[0].password == encryUtils.encrypt(pass)) {
             req.session.user = ret[0]
-            console.log(req.session.user);
+            //console.log(req.session.user);
             res.json({
                 code: 1,
                 msg: '登录成功',
@@ -42,7 +42,7 @@ router.post('/login', async function (req, res, next) {
         })
         // 4 登录状态保存session
         req.session.user = ret2[0]
-        console.log(req.session.user);
+        //console.log(req.session.user);
         res.json({
             code: 1,
             msg: '登录成功',
@@ -58,10 +58,7 @@ router.get('/getUser',async function(req,res){
             msg:'暂无登录'
         })
     }else{
-        let ret2 = await connect.query(`select * from user where id=${req.session.user.id}`, {
-            replacements: ['active'],
-            type: connect.QueryTypes.SELECT
-        })
+        let ret2 = await connect.query(`select * from user where id=${req.session.user.id}`)
         res.json({
             code:1,
             msg:'123',
@@ -72,7 +69,7 @@ router.get('/getUser',async function(req,res){
 
 router.get('/logout',async function(req,res){
     let ret2 = await connect.query(`delete from user where id=${req.session.user.id}`)
-    console.log(ret2);
+    //console.log(ret2);
     delete req.session.user
     res.json({
         code:1,
@@ -93,7 +90,7 @@ router.get('/list', async function (req, res, next) {
         replacements: ['active'],
         type: connect.QueryTypes.SELECT
     })
-    console.log(count.length,ret);
+    //console.log(count.length,ret);
     res.json({
         code: 1,
         msg: '',
@@ -109,7 +106,7 @@ router.get('/resetPass', async function(req,res,next){
         replacements: ['active'],
         type: connect.QueryTypes.DELETE
     })
-    console.log(re);
+    //console.log(re);
     res.json({
         code: 1,
         msg: ''
@@ -122,7 +119,7 @@ router.get('/remove', async function (req, res, next) {
         replacements: ['active'],
         type: connect.QueryTypes.DELETE
     })
-    console.log(re);
+    //console.log(re);
     res.json({
         code: 1,
         msg: ''

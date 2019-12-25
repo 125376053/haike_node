@@ -12,52 +12,20 @@
     <script src="./element/element.js"></script>
 </head>
 <body>
-<div id="app">
-    <!--顶栏-->
-    <header>
-        <h1 v-text="webname"></h1>
-        <div class="breadcrumb">
-            <i class="layui-icon">&#xe715;</i>
-            <ul>
-                <li v-for="vo,index in address">
-                    <a v-text="vo.name" :href="vo.url"></a>
-                    <span v-if="index==0">/</span>
-                </li>
-            </ul>
-        </div>
-    </header>
+<div id="app" v-cloak>
 
-    <!--左侧导航-->
-    <div class="main">
-        <!--左栏-->
-        <div class="left">
-            <ul class="cl">
-                <!--顶级分类-->
-                <li v-for="vo,index in menu">
-                    <a href="javascript:;" :class="{active:vo.active}" @click="onActive(index,vo)">
-                        <i class="layui-icon" v-html="vo.icon"></i>
-                        <span v-text="vo.name"></span>
-                        <i class="layui-icon arrow" v-show="vo.url.length==0">&#xe61a;</i>
-                        <i v-show="vo.active" class="layui-icon active">&#xe623;</i>
-                    </a>
-                    <!--子级分类-->
-                    <div v-for="vo2,index2 in vo.list" v-if="!vo.hidden">
-                        <a href="javascript:;" :class="{active:address[1].name==vo2.name}"
-                           @click="onActive2(index,vo,vo2)" v-text="vo2.name"></a>
-                        <i v-show="vo2.active" class="layui-icon active">&#xe623;</i>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <!--右侧-->
-
-    </div>
+    <top-and-nav></top-and-nav>
 
     <!--右侧内容-->
     <div class="right">
 
         <!--添加弹出-->
         <a class="layui-btn" @click="add1"><i class="layui-icon">&#xe654;</i>添加</a>
+
+        <!--查询-->
+        <el-input placeholder="请输入搜索内容" v-model="search" style="width:300px;float:right;overflow: hidden;">
+            <el-button slot="append" icon="el-icon-search" @click="searchFn"></el-button>
+        </el-input>
 
         <el-table
                 :data="newsList"
@@ -80,6 +48,9 @@
                     label="图片地址"
                     :show-overflow-tooltip="true"
             >
+                <template slot-scope="scope">
+                    <img width="50" height="50" style="object-fit: cover;" :src="scope.row.imgPath" alt="">
+                </template>
             </el-table-column>
 
 
@@ -98,8 +69,6 @@
                 background
                 layout="prev, pager, next"
                 :total="count"
-                :page-sizes="[count]"
-                :page-size="1"
                 @current-change="pageChange"
         >
         </el-pagination>
@@ -138,6 +107,7 @@
                 >
                     <el-button size="small" type="primary">上传图片</el-button>
                 </el-upload>
+
             </el-form-item>
 
             <el-form-item>
@@ -188,15 +158,15 @@
 <script src="./static/admin/js/config.js"></script>
 <script src="mxins/index.js"></script>
 <script src="static/wangEditor/wangEditor2.js"></script>
+<script src="mxins/topAndNav.js"></script>
 <script type="text/javascript">
 
     new Vue({
         el: '#app',
         mixins: [pub],
         data: {
-            newsList: [
-
-            ],
+            newsList: [],
+            fileList: [],
             ruleForm: {
                 name:'',
                 price:'',
@@ -216,11 +186,8 @@
             // 初始请求数据
             getData(){
                 $.ajax({
-                    url: api+`/product/list/`,
-                    data:{
-                        page:this.page,
-                        pageCount:this.pageCount
-                    },
+                    url: api+`/product/list?page=${this.page}&pageCount=${this.pageCount}&name=${this.search}`,
+                    type:'get',
                     success:(res)=>{
                         console.log(res);
                         this.newsList = res.data
@@ -230,21 +197,20 @@
             },
             // 搜索
             searchFn(){
-                $.ajax({
-                    url: api + "/managementAndSystem/query/"+this.search,
-                    success: (data) => {
-                        console.log(data);
-                        this.getData()
-                    }
-                });
+                this.getData()
             },
             // 添加数据
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+
+                        // 先上传图片
+                        //this.$refs.upload.submit();
+
                         var dataNew = {
                             ...this.ruleForm,
                         }
+
                         $.ajax({
                             url: api + "/product/add",
                             data: dataNew,

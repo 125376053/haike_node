@@ -1,8 +1,5 @@
 var pub = {
     data: {
-        username:'',
-        webname: 'Haike',
-        menu: [],
         // 页面通用参数
         eneditor:'',
         search:'',
@@ -14,129 +11,10 @@ var pub = {
         pages:0,
         page: 1, //当前页码
         pageCount:3, //每页条数
-    },
-    mounted(){
-        // 获取导航数据和页码地址
-        this.getNav()
-        this.getUser()
-    },
-    computed:{
-        // 记录当前进入的页面地址
-        address(){
-            if(window.sessionStorage.getItem('address')){
-                var ad = JSON.parse(window.sessionStorage.getItem('address'))
-                var one = ad[0]
-                //console.log(one);
-                this.menu.forEach((item)=>{
-                    if(item.name == one.name){
-                        console.log(item);
-                        item.hidden =false
-                    }else{
-                        console.log(123);
-                    }
-                })
-                return ad
-            }else{
-                var re = []
-                var path = window.location.pathname
-                //console.log(path);
-                //console.log(this.menu);
-                this.menu.forEach((item,index)=>{
-                    //console.log(item, index);
-                    if(item.list){
-                        item.list.forEach((item2,index2)=>{
-                            if(path.includes(item2.url)){
-                                console.log(item2,index2,index)
-                                re.push(
-                                    {
-                                        name:this.menu[index].name,
-                                        url:'javascript:;'
-                                    },
-                                    {
-                                        name:item2.name,
-                                        url:item.url
-                                    }
-                                )
-                                // 当前页面的模块默认打开
-                                console.log(this.menu[index]);
-                                this.menu[index].hidden = false
-                            }else{
-                                //console.log(123);
-                            }
-                        })
-                    }
-                })
-                //console.log(re);
-                return re
-            }
-        }
+        search:''
     },
     methods:{
-        getUser(){
-            // ajax拦截
-            $.ajax({
-                url:'/users/getUser',
-                success:(res)=>{
-                    if(res.code>0){
-                        this.username = res.data.username
-                    }else{
-                        window.location.href="./login.html"
-                    }
-                }
-            })
-        },
-        logout(){
-            $.ajax({
-                url:'/users/logout',
-                success:(res)=>{
-                    window.location.href="./login.html"
-                }
-            })
-        },
-        getNav(){
-            $.ajax({
-                url: 'data/menu.json',
-                dataType: 'text',
-                success: (menu) => {
-                    menu = eval('(' + menu + ')');
-                    this.menu = menu;
-                }
-            })
-        },
-        onActive(index, data){
-            // 不等于的隐藏 等于的不要设置
-            this.menu.forEach(item=>{
-                if(item.name != data.name){
-                    item.hidden = true
-                }
-            })
-            data.hidden = !data.hidden
-        },
-        onActive2(index, data, data2){
-            var address = []
-            address.push(
-                {
-                    name: data.name,
-                    url: data.url
-                },
-                {
-                    name: data2.name,
-                    url: data2.url
-                }
-            )
-            this.address = address;
-            window.sessionStorage.setItem('address', JSON.stringify(address))
 
-            if (data2.target) {
-                if (data2.target == '_blank') {
-                    window.open(data2.url);
-                } else {
-                    window.location.href = data2.url;
-                }
-            } else {
-                window.location.href = data2.url;
-            }
-        },
         // 格式化日期
         date(time){
             var time = new Date(time).toLocaleString()
@@ -158,6 +36,10 @@ var pub = {
             this.getData()
         },
 
+        /*changeImg(file, fileList){
+            //console.log(file, fileList);
+            this.ruleForm.imgPath = file.name
+        },*/
         //上传图片新建
         successImg(response, file, fileList){
             console.log(response, file, fileList);
